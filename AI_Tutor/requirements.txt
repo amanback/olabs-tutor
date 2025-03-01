@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+sentence-transformers
+langchain
+langchain-community
+langchain-chroma
+langchain-google-genai
+pydantic
+argparse
+shutil
+os
+json
+re
+collections
+typing

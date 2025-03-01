@@ -1,0 +1,408 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    overflow-y: auto;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+body.dark-mode {
+    color: #f0f0f0;
+}
+
+.input-container {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    padding-top: 20vh;
+    margin-bottom: 30px;
+    z-index: 10;
+    text-align: center;
+}
+
+.input-box {
+    display: flex;
+    align-items: center;
+    border: 2px solid #ccc;
+    border-radius: 25px;
+    padding: 10px;
+    background: white;
+    width: 100%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.dark-mode .input-box {
+    background: #1e2a3a;
+    border-color: #444;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.input-box:focus-within {
+    border-color: #2a9d8f;
+    box-shadow: 0 4px 10px rgba(42, 157, 143, 0.2);
+}
+
+.dark-mode .input-box:focus-within {
+    border-color: #3fcab9;
+    box-shadow: 0 4px 10px rgba(63, 202, 185, 0.3);
+}
+
+.input-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 25px;
+    background: transparent;
+    color: inherit;
+}
+
+.input-box button {
+    background-color: #2a9d8f;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 25px;
+    margin-left: 5px;
+    transition: background-color 0.3s;
+}
+
+.dark-mode .input-box button {
+    background-color: #3fcab9;
+}
+
+.input-box button:hover {
+    background-color: #1e766c;
+}
+
+.dark-mode .input-box button:hover {
+    background-color: #2eb6a5;
+}
+
+.mic-button {
+    background: none;
+    border: none;
+    color: #2a9d8f;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 10px;
+    transition: color 0.3s;
+}
+
+.dark-mode .mic-button {
+    color: #3fcab9;
+}
+
+.mic-button:hover {
+    color: #1e766c;
+}
+
+.dark-mode .mic-button:hover {
+    color: #2eb6a5;
+}
+
+.mic-button.active {
+    color: #e63946;
+    animation: pulse 1.5s infinite;
+}
+
+.status-indicator {
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+    right: 0;
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+    display: none;
+}
+
+.dark-mode .status-indicator {
+    color: #aaa;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.response-container {
+    width: 80%;
+    max-width: 800px;
+    margin-top: 20px;
+    padding: 25px 30px;
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    display: none;
+    max-height: 60vh;
+    overflow-y: auto;
+    margin-bottom: 40px;
+    font-size: 17px;
+    line-height: 1.6;
+    transition: all 0.3s ease;
+    border-left: 4px solid #2a9d8f;
+}
+
+.dark-mode .response-container {
+    background-color: rgba(30, 42, 58, 0.85);
+    border-left: 4px solid #3fcab9;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.response-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.response-container::-webkit-scrollbar-track {
+    background: rgba(240, 240, 240, 0.5);
+    border-radius: 10px;
+}
+
+.dark-mode .response-container::-webkit-scrollbar-track {
+    background: rgba(40, 40, 40, 0.5);
+}
+
+.response-container::-webkit-scrollbar-thumb {
+    background: rgba(42, 157, 143, 0.5);
+    border-radius: 10px;
+}
+
+.dark-mode .response-container::-webkit-scrollbar-thumb {
+    background: rgba(63, 202, 185, 0.5);
+}
+
+.response-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(42, 157, 143, 0.7);
+}
+
+.dark-mode .response-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(63, 202, 185, 0.7);
+}
+
+.response-container h1, .response-container h2, .response-container h3 {
+    color: #2a9d8f;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.dark-mode .response-container h1, 
+.dark-mode .response-container h2, 
+.dark-mode .response-container h3 {
+    color: #3fcab9;
+}
+
+.response-container p {
+    margin-bottom: 15px;
+}
+
+.response-container a {
+    color: #2a9d8f;
+    text-decoration: none;
+    border-bottom: 1px dotted #2a9d8f;
+}
+
+.dark-mode .response-container a {
+    color: #3fcab9;
+    border-bottom: 1px dotted #3fcab9;
+}
+
+.response-container a:hover {
+    color: #1e766c;
+    border-bottom: 1px solid #1e766c;
+}
+
+.dark-mode .response-container a:hover {
+    color: #2eb6a5;
+    border-bottom: 1px solid #2eb6a5;
+}
+
+.response-container pre, .response-container code {
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 12px;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    overflow-x: auto;
+    margin: 15px 0;
+}
+
+.dark-mode .response-container pre, 
+.dark-mode .response-container code {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.response-container ul, .response-container ol {
+    padding-left: 25px;
+    margin-bottom: 15px;
+}
+
+.response-container li {
+    margin-bottom: 5px;
+}
+
+.response-container blockquote {
+    border-left: 3px solid #2a9d8f;
+    padding-left: 15px;
+    margin-left: 0;
+    color: #555;
+    font-style: italic;
+}
+
+.dark-mode .response-container blockquote {
+    border-left: 3px solid #3fcab9;
+    color: #bbb;
+}
+
+.loader {
+    display: none;
+    border: 5px solid rgba(240, 240, 240, 0.5);
+    border-radius: 50%;
+    border-top: 5px solid #2a9d8f;
+    width: 50px;
+    height: 50px;
+    margin: 20px auto;
+    animation: spin 2s linear infinite;
+}
+
+.dark-mode .loader {
+    border: 5px solid rgba(30, 30, 30, 0.5);
+    border-top: 5px solid #3fcab9;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.response-appear {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.response-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .response-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+
+.response-avatar {
+    background-color: #2a9d8f;
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    font-size: 16px;
+}
+
+.dark-mode .response-avatar {
+    background-color: #3fcab9;
+}
+
+/* Fixed - Ensure icon color is white in both modes */
+.response-avatar i {
+    color: white;
+}
+
+.response-title {
+    font-weight: 600;
+    font-size: 18px;
+    color: #333;
+}
+
+.dark-mode .response-title {
+    color: #f0f0f0;
+}
+
+.response-timestamp {
+    margin-left: auto;
+    font-size: 12px;
+    color: #888;
+}
+
+.dark-mode .response-timestamp {
+    color: #aaa;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+/* Dark Mode Toggle Button */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: none;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.dark-mode .theme-toggle {
+    background-color: rgba(30, 42, 58, 0.8);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+
+.theme-toggle i {
+    font-size: 20px;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+.dark-mode .theme-toggle i {
+    color: #f0f0f0;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.05);
+}
+
+/* Fixed - Ensure microphone icon is always visible */
+.mic-button i {
+    color: white;
+}
+
+/* Fixed - Ensure error icon is white */
+.response-avatar[style*="background-color: #e63946"] i {
+    color: white;
+}
