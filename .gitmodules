@@ -1,0 +1,3 @@
+[submodule "AI_Tutor"]
+	path = AI_Tutor
+	url = https://github.com/amanback/olabs-tutor.git
