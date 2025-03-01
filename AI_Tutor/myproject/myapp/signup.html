@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Q&A Forum</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background-color: #f6f6f6;
+            color: #242729;
+        }
+
+        .header {
+            background: #ffffff;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            padding: 16px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0077cc;
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 100px auto 20px;
+            padding: 20px;
+        }
+
+        .signup-card {
+            background: white;
+            border: 1px solid #e3e6e8;
+            border-radius: 3px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+
+        .signup-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .signup-title {
+            font-size: 21px;
+            margin-bottom: 8px;
+            color: #242729;
+        }
+
+        .signup-subtitle {
+            font-size: 13px;
+            color: #6a737c;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #3b4045;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #babfc4;
+            border-radius: 3px;
+            font-size: 14px;
+            color: #242729;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #0077cc;
+            box-shadow: 0 0 0 4px rgba(0,119,204,0.1);
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: #6a737c;
+            margin-top: 4px;
+        }
+
+        .signup-button {
+            width: 100%;
+            background: #0095ff;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 3px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 16px;
+            transition: background-color 0.2s;
+        }
+
+        .signup-button:hover {
+            background: #0077cc;
+        }
+
+        .form-footer {
+            text-align: center;
+            font-size: 13px;
+            color: #6a737c;
+        }
+
+        .form-footer a {
+            color: #0077cc;
+            text-decoration: none;
+            margin-left: 5px;
+        }
+
+        .form-footer a:hover {
+            color: #0095ff;
+        }
+
+        .social-signup {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e3e6e8;
+        }
+
+        .social-button {
+            width: 100%;
+            padding: 8px 16px;
+            margin-bottom: 8px;
+            border: 1px solid #babfc4;
+            border-radius: 3px;
+            background: white;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .social-button:hover {
+            background: #f8f9f9;
+        }
+
+        .terms-text {
+            font-size: 12px;
+            color: #6a737c;
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        .terms-text a {
+            color: #0077cc;
+            text-decoration: none;
+        }
+
+        .error-message {
+            color: #d0393e;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+                margin-top: 80px;
+            }
+
+            .signup-card {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="#" class="logo">Q&A Forum</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="signup-card">
+            <div class="signup-header">
+                <h1 class="signup-title">Join Q&A Forum</h1>
+                <p class="signup-subtitle">Get answers to your questions and help others</p>
+            </div>
+            
+            <form action="/signup" method="POST">
+                <div class="form-group">
+                    <label class="form-label" for="display-name">Display name</label>
+                    <input type="text" name="display_name" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="email">Email</label>
+                    <input type="email" id="email" name="email" class="form-input" required>
+                    <div class="form-hint">We'll send verification email to this address</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-input" required>
+                    <div class="form-hint">Must be at least 8 characters long</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="confirm-password">Confirm password</label>
+                    <input type="password" id="confirm-password" name="confirm-password" class="form-input" required>
+                </div>
+
+                <button type="submit" class="signup-button">Sign up</button>
+
+                <div class="form-footer">
+                    Already have an account?<a href="/login">Log in</a>
+                </div>
+
+                <div class="social-signup">
+                    <button type="button" class="social-button">
+                        <i class="fab fa-google"></i>
+                        Sign up with Google
+                    </button>
+                    <button type="button" class="social-button">
+                        <i class="fab fa-github"></i>
+                        Sign up with GitHub
+                    </button>
+                </div>
+
+                <div class="terms-text">
+                    By clicking "Sign up", you agree to our 
+                    <a href="/terms">terms of service</a>, 
+                    <a href="/privacy">privacy policy</a> and 
+                    <a href="/cookies">cookie policy</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
