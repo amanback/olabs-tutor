@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Answer Form - Q&A Forum</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Add Three.js and Vanta.js for the NET background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanta/0.5.21/vanta.net.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --bg-color: #111;
+            --bg-card: rgba(25, 25, 25, 0.8);
+            --text-color: #f8f9fa;
+            --text-secondary: rgba(248, 249, 250, 0.6);
+            --primary-color: #2a9d8f;
+            --primary-light: rgba(42, 157, 143, 0.15);
+            --border-color: rgba(42, 157, 143, 0.1);
+            --border-color-hover: rgba(42, 157, 143, 0.3);
+            --border-secondary: rgba(248, 249, 250, 0.1);
+            --header-bg: rgba(25, 25, 25, 0.8);
+            --header-scroll: rgba(20, 20, 20, 0.9);
+            --shadow-color: rgba(0, 0, 0, 0.2);
+            --glow-color: rgba(42, 157, 143, 0.2);
+            --error-color: #e63946;
+            --warning-color: #ff9f1c;
+        }
+        
+        [data-theme="light"] {
+            --bg-color: #f0f2f5;
+            --bg-card: rgba(255, 255, 255, 0.9);
+            --text-color: #333;
+            --text-secondary: rgba(0, 0, 0, 0.6);
+            --primary-color: #2a9d8f;
+            --primary-light: rgba(42, 157, 143, 0.15);
+            --border-color: rgba(42, 157, 143, 0.1);
+            --border-color-hover: rgba(42, 157, 143, 0.3);
+            --border-secondary: rgba(0, 0, 0, 0.1);
+            --header-bg: rgba(255, 255, 255, 0.8);
+            --header-scroll: rgba(255, 255, 255, 0.95);
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --glow-color: rgba(42, 157, 143, 0.15);
+            --error-color: #e63946;
+            --warning-color: #ff9f1c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        #vanta-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .header {
+            background: var(--header-bg);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px var(--shadow-color);
+            padding: 20px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+        
+        .logo:hover {
+            color: #3ab8a8;
+            text-shadow: 0 0 10px var(--glow-color);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary-color);
+            text-shadow: 0 0 8px var(--glow-color);
+        }
+        
+        .theme-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: var(--primary-light);
+            border-radius: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 0 5px;
+            justify-content: space-between;
+            border: 1px solid var(--border-color);
+        }
+        
+        .theme-switch i {
+            font-size: 16px;
+            color: var(--primary-color);
+        }
+        
+        .theme-switch::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            top: 3px;
+            left: 4px;
+            transition: transform 0.3s ease;
+        }
+        
+        [data-theme="light"] .theme-switch::after {
+            transform: translateX(30px);
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 120px auto 40px;
+            padding: 30px;
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 6px 16px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border 0.3s ease;
+        }
+        
+        .container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--glow-color), 0 0 15px var(--glow-color);
+            border: 1px solid var(--border-color-hover);
+        }
+        
+        .question-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            border: 1px solid var(--border-color);
+        }
+        
+        .question-title {
+            font-size: 24px;
+            color: var(--primary-color);
+            margin-bottom: 16px;
+        }
+        
+        .question-details {
+            font-size: 16px;
+            color: var(--text-color);
+            line-height: 1.6;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-secondary);
+        }
+        
+        .question-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .answer-form {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            border: 1px solid var(--border-color);
+        }
+        
+        .form-header {
+            font-size: 20px;
+            color: var(--primary-color);
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-secondary);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+        
+        .form-textarea {
+            width: 100%;
+            height: 250px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            background: var(--bg-card);
+            color: var(--text-color);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        
+        .form-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .formatting-tools {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .tool-btn {
+            background: var(--primary-light);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--primary-color);
+            transition: background 0.3s, transform 0.2s;
+        }
+        
+        .tool-btn:hover {
+            background: rgba(42, 157, 143, 0.25);
+            transform: translateY(-2px);
+        }
+        
+        .submit-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.3s, transform 0.2s;
+        }
+        
+        .submit-btn:hover {
+            background: #218a7e;
+            transform: translateY(-2px);
+        }
+        
+        .attachment-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-secondary);
+        }
+        
+        .attachment-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+        
+        .file-btn {
+            background: var(--primary-light);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--primary-color);
+            transition: background 0.3s, transform 0.2s;
+        }
+        
+        .file-btn:hover {
+            background: rgba(42, 157, 143, 0.25);
+            transform: translateY(-2px);
+        }
+        
+        #fileName {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .guidelines {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 24px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            border: 1px solid var(--border-color);
+        }
+        
+        .guidelines h3 {
+            font-size: 18px;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+        }
+        
+        .guidelines ul {
+            padding-left: 20px;
+            color: var(--text-secondary);
+        }
+        
+        .guidelines li {
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 100px 20px 20px;
+            }
+            
+            .form-controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="vanta-bg"></div>
+    
+    <header class="header">
+        <div class="header-content">
+            <a href="#" class="logo">OLabs</a>
+            <nav class="nav-links">
+                <a href="home.html">Home</a>
+                <a href="qa_forum.html">Q&A Forum</a>
+                <a href="gamified_engine.html">Gamified Engine</a>
+                <a href="ai_tutor.html">AI Tutor</a>
+            </nav>
+            <div class="theme-switch" id="themeToggle">
+                <i class="fas fa-moon"></i>
+                <i class="fas fa-sun"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="question-card">
+            <h1 class="question-title">{{ question.title }}</h1>
+            <div class="question-details">
+                {{ question.content }}
+            </div>
+            <div class="question-meta">
+                <span>Asked by {% if question.author %}{{ question.author.username }}{% else %}Anonymous{% endif %}</span>
+                <span>{{ question.created_at|date:"M d, Y" }}</span>
+            </div>
+        </div>
+
+        <div class="answer-form">
+            <h2 class="form-header">Your Answer</h2>
+
+            <form id="answerForm" action="{% url 'forum:submit_answer' question.id %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="answerContent" class="form-label">Write your answer</label>
+                    <textarea id="answerContent" name="content" class="form-textarea" placeholder="Provide your answer here. Use Markdown for formatting. Be clear and concise.">{{ form.content.value|default_if_none:"" }}</textarea>
+                    {% if form.content.errors %}
+                        <div class="form-error">{{ form.content.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-controls">
+                    <div class="formatting-tools">
+                        <button type="button" class="tool-btn" onclick="formatText('bold')">Bold</button>
+                        <button type="button" class="tool-btn" onclick="formatText('italic')">Italic</button>
+                        <button type="button" class="tool-btn" onclick="formatText('code')">Code</button>
+                        <button type="button" class="tool-btn" onclick="formatText('link')">Link</button>
+                        <button type="button" class="tool-btn" onclick="formatText('list')">List</button>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Post Your Answer</button>
+                </div>
+
+                <div class="attachment-section">
+                    <div class="attachment-label">
+                        <span class="attachment-icon">📎</span>
+                        <span>Add supporting files (optional)</span>
+                    </div>
+
+                    <label for="fileAttachment" class="file-btn">Choose File</label>
+                    <input type="file" id="fileAttachment" name="attachment" class="file-input">
+                    <span id="fileName">No file chosen</span>
+                </div>
+            </form>
+        </div>
+
+        <div class="guidelines">
+            <h3>Answer Guidelines</h3>
+            <ul>
+                <li>Provide detailed explanations with examples when possible</li>
+                <li>Use appropriate formatting for code, equations, or important concepts</li>
+                <li>Cite sources if you're referencing external material</li>
+                <li>Be respectful and constructive, even if correcting misconceptions</li>
+                <li>Focus on answering the specific question asked</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript Functions
+        function formatText(type) {
+            const textarea = document.getElementById('answerContent');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(start, end);
+            let formattedText = '';
+
+            switch(type) {
+                case 'bold':
+                    formattedText = `**${selectedText}**`;
+                    break;
+                case 'italic':
+                    formattedText = `*${selectedText}*`;
+                    break;
+                case 'code':
+                    formattedText = `\`${selectedText}\``;
+                    break;
+                case 'link':
+                    formattedText = `[${selectedText}](url)`;
+                    break;
+                case 'list':
+                    formattedText = `\n- ${selectedText}`;
+                    break;
+            }
+
+            textarea.value =
+                textarea.value.substring(0, start) +
+                formattedText +
+                textarea.value.substring(end);
+
+            textarea.focus();
+            textarea.selectionStart = start + formattedText.length;
+            textarea.selectionEnd = start + formattedText.length;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // File upload handling
+            const fileInput = document.getElementById('fileAttachment');
+            const fileNameDisplay = document.getElementById('fileName');
+
+            if (fileInput && fileNameDisplay) {
+                fileInput.addEventListener('change', function(e) {
+                    if (e.target.files.length > 0) {
+                        const fileName = e.target.files[0].name;
+                        fileNameDisplay.textContent = fileName;
+                    } else {
+                        fileNameDisplay.textContent = 'No file chosen';
+                    }
+                });
+            }
+
+            // Form submission (in case we want to handle it via AJAX in the future)
+            const answerForm = document.getElementById('answerForm');
+            if (answerForm) {
+                answerForm.addEventListener('submit', function(e) {
+                    // We'll let Django handle the form submission for now
+                    // This is where you could add AJAX form submission if needed
+                });
+            }
+        });
+
+        // Initialize Vanta.js NET background
+        let vantaEffect = null;
+        function initVanta() {
+            if (vantaEffect) vantaEffect.destroy();
+            vantaEffect = VANTA.NET({
+                el: "#vanta-bg",
+                mouseControls: true,
+                touchControls: true,
+                gyroControls: false,
+                minHeight: 200.00,
+                minWidth: 200.00,
+                scale: 1.00,
+                scaleMobile: 1.00,
+                color: document.documentElement.getAttribute('data-theme') === 'dark' ? 0x2a9d8f : 0x2a9d8f,
+                backgroundColor: document.documentElement.getAttribute('data-theme') === 'dark' ? 0x111111 : 0xf0f2f5,
+                points: 10.00,
+                maxDistance: 20.00,
+                spacing: 16.00
+            });
+        }
+
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', function () {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            initVanta();
+        });
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+
+        // Initialize Vanta effect on load
+        document.addEventListener('DOMContentLoaded', function () {
+            initVanta();
+        });
+    </script>
+</body>
+</html>

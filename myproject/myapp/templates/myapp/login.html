@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Q&A Forum</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+        }
+        body {
+            background-color: #f6f6f6;
+            color: #242729;
+        }
+        .header {
+            background: #ffffff;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            padding: 16px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0077cc;
+            text-decoration: none;
+        }
+        .container {
+            max-width: 400px;
+            margin: 100px auto 20px;
+            padding: 20px;
+        }
+        .login-card {
+            background: white;
+            border: 1px solid #e3e6e8;
+            border-radius: 3px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+        .login-title {
+            text-align: center;
+            font-size: 21px;
+            margin-bottom: 20px;
+            color: #242729;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #3b4045;
+        }
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #babfc4;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+        .login-button {
+            width: 100%;
+            background: #0095ff;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 3px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 16px;
+        }
+        .login-button:hover {
+            background: #0077cc;
+        }
+        .error-message {
+            color: red;
+            font-size: 13px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="{% url 'index' %}" class="logo">Q&A Forum</a>
+        </div>
+    </header>
+    <div class="container">
+        <div class="login-card">
+            <h1 class="login-title">Log in to Q&A Forum</h1>
+            <form id="login-form" method="POST" action="{% url 'login' %}">
+                {% csrf_token %}
+                <label>Username:</label>
+                <input type="text" name="username" required><br><br>
+            
+                <label>Password:</label>
+                <input type="password" name="password" required><br><br>
+            
+                <button type="submit">Login</button>
+            </form>
+            
+            <p>New user? <a href="{% url 'signup' %}">Sign up here</a></p>
+            
+            <script>
+                document.getElementById("login-form").addEventListener("submit", function(event) {
+                    event.preventDefault();
+                    let formData = new FormData(this);
+            
+                    fetch("{% url 'login' %}", {
+                        method: "POST",
+                        body: formData,
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === "new_user") {
+                            window.location.href = "{% url 'signup' %}";
+                        } else {
+                            window.location.href = "{% url 'index' %}";
+                        }
+                    })
+                    .catch(() => alert("Login failed. Please try again."));
+                });
+            </script>
+            

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Detail</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery for AJAX -->
+    <style>
+        /* Base styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin: 20px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e1e4e8;
+            font-size: 28px;
+        }
+
+        h2 {
+            color: #3a5169;
+            font-size: 22px;
+            margin: 25px 0 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eaecef;
+        }
+
+        p {
+            margin-bottom: 16px;
+        }
+
+        .question-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .author-info {
+            color: #606770;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        #answers-list {
+            list-style-type: none;
+        }
+
+        #answers-list li {
+            background-color: #fff;
+            padding: 16px;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 16px;
+        }
+
+        .answer-date {
+            color: #606770;
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        #answer-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+            font-family: inherit;
+            margin-bottom: 10px;
+        }
+
+        button[type="submit"] {
+            background-color: #0366d6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0255b3;
+        }
+
+        .error-message {
+            color: red;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .login-prompt {
+            background-color: #fff;
+            padding: 16px;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="question-container">
+        <h1>{{ question.title }}</h1>
+        <p class="author-info">Asked by: {{ question.author.username }} on {{ question.created_at }}</p>
+        <div class="question-content">
+            <p>{{ question.content }}</p>
+        </div>
+    </div>
+
+    <h2>Answers</h2>
+    <ul id="answers-list">
+        {% for answer in answers %}
+            <li id="answer-{{ answer.id }}">
+                <strong>{{ answer.author.username }}</strong>: {{ answer.content }}
+                <span class="answer-date">({{ answer.created_at }})</span>
+            </li>
+        {% endfor %}
+    </ul>
+
+    {% if user.is_authenticated %}
+    <h2>Post Your Answer</h2>
+    <form id="answer-form">
+        {% csrf_token %}
+        <div id="error-message" class="error-message" style="display: none;"></div>
+        {{ form.as_p }}
+        <button type="submit">Submit Answer</button>
+    </form>
+    {% else %}
+    <div class="login-prompt">
+        <p><a href="{% url 'login' %}">Log in</a> to post an answer.</p>
+    </div>
+    {% endif %}
+
+    <script>
+        $(document).ready(function() {
+            $("#answer-form").submit(function(event) {
+                event.preventDefault();
+                var answerContent = $("#id_content").val().trim();
+                if (!answerContent) {
+                    alert("❌ Answer cannot be empty.");
+                    return;
+                }
+                
+                // Submit directly to the answer endpoint which already includes moderation
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'answer_question' question.id %}",
+                    data: JSON.stringify({ content: answerContent }),
+                    contentType: "application/json",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}",
+                        "X-Requested-With": "XMLHttpRequest"
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            var newAnswer = `
+                                <li id="answer-${response.id}">
+                                    <strong>${response.author}</strong>: ${response.content}
+                                    <span class="answer-date">(${response.created_at})</span>
+                                    <div class="votes-container">
+                                        <button class="vote-button" data-answer-id="${response.id}" data-action="upvote">👍</button>
+                                        <span id="votes-${response.id}" class="votes-count">${response.votes}</span>
+                                        <button class="vote-button" data-answer-id="${response.id}" data-action="downvote">👎</button>
+                                    </div>
+                                </li>
+                            `;
+                            $("#answers-list").prepend(newAnswer);
+                            $("#answer-form")[0].reset();
+                        } else {
+                            alert("❌ " + (response.error || "Failed to submit the answer."));
+                        }
+                    },
+                    error: function(xhr) {
+                        // Try to extract error message from JSON response if available
+                        try {
+                            var errorMsg = JSON.parse(xhr.responseText).error || "Error submitting the answer.";
+                            alert("❌ " + errorMsg);
+                        } catch (e) {
+                            alert("❌ Error submitting the answer.");
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>

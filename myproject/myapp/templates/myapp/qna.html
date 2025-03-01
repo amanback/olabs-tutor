@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Q&A Forum</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Add Three.js and Vanta.js for the NET background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanta/0.5.21/vanta.net.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        
+        body {
+            background-color: #111;
+            color: #f8f9fa;
+            font-size: 16px;
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        #vanta-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .header {
+            background: rgba(25, 25, 25, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            padding: 20px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2a9d8f;
+            text-decoration: none;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+        
+        .logo:hover {
+            color: #3ab8a8;
+            text-shadow: 0 0 10px rgba(42, 157, 143, 0.5);
+        }
+        
+        .search-container {
+            background: rgba(25, 25, 25, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+            max-width: 1000px;
+            margin: 100px auto 20px;
+            display: flex;
+            align-items: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(42, 157, 143, 0.1);
+        }
+        
+        .search-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(42, 157, 143, 0.2), 0 0 15px rgba(42, 157, 143, 0.2);
+            border: 1px solid rgba(42, 157, 143, 0.3);
+        }
+        
+        .search-bar {
+            flex: 1;
+            position: relative;
+        }
+        
+        .search-bar input {
+            width: 100%;
+            padding: 14px 35px 14px 15px;
+            border: 1px solid rgba(42, 157, 143, 0.3);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(30, 30, 30, 0.8);
+            color: #f8f9fa;
+        }
+        
+        .search-bar input:focus {
+            outline: none;
+            border-color: #2a9d8f;
+            box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.25);
+        }
+        
+        .search-bar input::placeholder {
+            color: rgba(248, 249, 250, 0.6);
+        }
+        
+        .search-bar i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(248, 249, 250, 0.6);
+        }
+        
+        .ask-question-btn {
+            background: #2a9d8f;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ask-question-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(45deg);
+            transition: transform 0.6s ease;
+        }
+        
+        .ask-question-btn:hover {
+            background: #218a7e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(42, 157, 143, 0.4), 0 0 8px rgba(42, 157, 143, 0.6);
+        }
+        
+        .ask-question-btn:hover::before {
+            transform: rotate(45deg) translate(100%, 100%);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+        }
+        
+        .questions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .questions-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: #f8f9fa;
+            position: relative;
+        }
+        
+        .questions-title::after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 4px;
+            background: #2a9d8f;
+            bottom: -8px;
+            left: 0;
+            border-radius: 2px;
+            box-shadow: 0 0 8px rgba(42, 157, 143, 0.6);
+        }
+        
+        .question-card {
+            background: rgba(25, 25, 25, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border 0.3s ease;
+            border: 1px solid rgba(42, 157, 143, 0.1);
+        }
+        
+        .question-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(42, 157, 143, 0.2), 0 0 15px rgba(42, 157, 143, 0.2);
+            border: 1px solid rgba(42, 157, 143, 0.3);
+        }
+        
+        .stats {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            min-width: 90px;
+            padding-right: 20px;
+            border-right: 1px solid rgba(248, 249, 250, 0.1);
+        }
+        
+        .stat-item {
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+        
+        .stat-item:hover {
+            transform: scale(1.05);
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            color: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: rgba(248, 249, 250, 0.6);
+        }
+        
+        .question-content {
+            flex: 1;
+        }
+        
+        .question-title {
+            font-size: 20px;
+            color: #2a9d8f;
+            text-decoration: none;
+            margin-bottom: 12px;
+            font-weight: 500;
+            display: block;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+        
+        .question-title:hover {
+            color: #3ab8a8;
+            text-shadow: 0 0 8px rgba(42, 157, 143, 0.4);
+        }
+        
+        .question-excerpt {
+            font-size: 15px;
+            color: rgba(248, 249, 250, 0.8);
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+        
+        .tags {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .tag {
+            background: rgba(42, 157, 143, 0.15);
+            color: #2a9d8f;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(42, 157, 143, 0.2);
+        }
+        
+        .tag:hover {
+            background: rgba(42, 157, 143, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 6px rgba(42, 157, 143, 0.3);
+            border: 1px solid rgba(42, 157, 143, 0.4);
+        }
+        
+        .question-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: rgba(248, 249, 250, 0.6);
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(248, 249, 250, 0.1);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .user-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(42, 157, 143, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2a9d8f;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .sidebar {
+            position: sticky;
+            top: 120px;
+        }
+        
+        .sidebar-card {
+            background: rgba(25, 25, 25, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border 0.3s ease;
+            overflow: hidden;
+            border: 1px solid rgba(42, 157, 143, 0.1);
+        }
+        
+        .sidebar-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(42, 157, 143, 0.2), 0 0 15px rgba(42, 157, 143, 0.2);
+            border: 1px solid rgba(42, 157, 143, 0.3);
+        }
+        
+        .sidebar-header {
+            background: rgba(42, 157, 143, 0.1);
+            padding: 16px 20px;
+            font-size: 18px;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(42, 157, 143, 0.2);
+            color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sidebar-header i {
+            color: #2a9d8f;
+        }
+        
+        .sidebar-content {
+            padding: 20px;
+        }
+        
+        .tips-list {
+            list-style: none;
+        }
+        
+        .tips-item {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(248, 249, 250, 0.1);
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            transition: transform 0.2s ease;
+        }
+        
+        .tips-item:last-child {
+            border-bottom: none;
+        }
+        
+        .tips-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .tips-item i {
+            color: #2a9d8f;
+            margin-top: 4px;
+        }
+        
+        .no-questions {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(248, 249, 250, 0.8);
+            background: rgba(25, 25, 25, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            animation: fadeIn 0.5s ease-in-out;
+            border: 1px solid rgba(42, 157, 143, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border 0.3s ease;
+        }
+        
+        .no-questions:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(42, 157, 143, 0.2), 0 0 15px rgba(42, 157, 143, 0.2);
+            border: 1px solid rgba(42, 157, 143, 0.3);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 12px;
+            }
+            
+            .search-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .ask-question-btn {
+                width: 100%;
+                margin-left: 0;
+            }
+            
+            .stats {
+                min-width: 70px;
+                padding-right: 15px;
+            }
+            
+            .questions-title {
+                font-size: 26px;
+            }
+            
+            .question-card {
+                padding: 16px;
+            }
+        }
+        
+        /* Custom scrollbar for webkit browsers */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(25, 25, 25, 0.8);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(42, 157, 143, 0.5);
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(42, 157, 143, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <div id="vanta-bg"></div>
+    
+    <header class="header">
+        <div class="header-content">
+            <a href="#" class="logo">Q&A Forum</a>
+            <button class="ask-question-btn" onclick="location.href='{% url 'ask_question' %}'">
+                <i class="fas fa-plus-circle"></i> Ask a Question
+            </button>
+        </div>
+    </header>
+
+    <div class="search-container">
+        <div class="search-bar">
+            <input type="text" placeholder="Search questions..." id="searchInput">
+            <i class="fas fa-search"></i>
+        </div>
+        <button class="ask-question-btn" onclick="submitSearch()">
+            <i class="fas fa-search"></i> Search
+        </button>
+    </div>
+
+    <div class="container">
+        <main>
+            <div class="questions-header">
+                <h1 class="questions-title">All Questions</h1>
+            </div>
+        
+            {% if questions %}
+                {% for question in questions %}
+                <div class="question-card">
+                    <div class="stats">
+                        <div class="stat-item">
+                            <span class="stat-number">{{ question.total_votes }}</span>
+                            <span class="stat-label">votes</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">{{ question.total_answers }}</span>
+                            <span class="stat-label">answers</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">{{ question.total_views }}</span>
+                            <span class="stat-label">views</span>
+                        </div>
+                    </div>
+                    <div class="question-content">
+                        <a href="{% url 'question_detail' question.id %}" class="question-title">{{ question.title }}</a>
+                        <p class="question-excerpt">{{ question.description|truncatewords:20 }}</p>
+                        <div class="tags">
+                            {% for tag in question.tag_list %}
+                            <span class="tag">{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="question-meta">
+                            <div class="user-info">
+                                <div class="user-avatar">{{ question.user.username|first|upper }}</div>
+                                <span>{{ question.user.username }}</span>
+                            </div>
+                            <span>{{ question.created_at|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-questions">
+                    <i class="fas fa-question-circle" style="font-size: 48px; color: #2a9d8f; margin-bottom: 15px;"></i>
+                    <h2 style="margin-bottom: 10px; color: #f8f9fa;">No questions yet</h2>
+                    <p>Be the first to ask a question and start the community!</p>
+                    <button class="ask-question-btn" style="margin-top: 20px;" onclick="location.href='{% url 'ask_question' %}'">
+                        Ask a Question
+                    </button>
+                </div>
+            {% endif %}
+        </main>
+
+        <aside class="sidebar">
+            <div class="sidebar-card">
+                <div class="sidebar-header">
+                    <i class="fas fa-lightbulb"></i>
+                    Asking Tips
+                </div>
+                <div class="sidebar-content">
+                    <ul class="tips-list">
+                        <li class="tips-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Be specific about your problem and include all relevant details</span>
+                        </li>
+                        <li class="tips-item">
+                            <i class="fas fa-code"></i>
+                            <span>Include formatted code examples to help others understand</span>
+                        </li>
+                        <li class="tips-item">
+                            <i class="fas fa-history"></i>
+                            <span>Describe what you've tried and research you've done</span>
+                        </li>
+                        <li class="tips-item">
+                            <i class="fas fa-tags"></i>
+                            <span>Use appropriate tags to categorize your question</span>
+                        </li>
+                        <li class="tips-item">
+                            <i class="fas fa-spell-check"></i>
+                            <span>Proofread your question for clarity and correctness</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="message-alert" style="display:none;">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <script>
+        // Initialize Vanta.js NET background
+        VANTA.NET({
+            el: "#vanta-bg",
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: 200.00,
+            minWidth: 200.00,
+            scale: 1.00,
+            scaleMobile: 1.00,
+            color: 0x2a9d8f,
+            backgroundColor: 0x111111,
+            points: 10.00,
+            maxDistance: 20.00,
+            spacing: 16.00
+        });
+        
+        // Animation for page elements
+        document.addEventListener('DOMContentLoaded', function() {
+            const questionCards = document.querySelectorAll('.question-card');
+            questionCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+            
+            // Show alert messages with animations
+            const messages = document.querySelectorAll('.message-alert');
+            if (messages.length > 0) {
+                messages.forEach(message => {
+                    showAlert(message.textContent);
+                });
+            }
+        });
+        
+        // Add cursor glow effect
+        document.addEventListener('mousemove', function(e) {
+            const cursor = document.createElement('div');
+            cursor.className = 'cursor-glow';
+            cursor.style.left = e.pageX + 'px';
+            cursor.style.top = e.pageY + 'px';
+            document.body.appendChild(cursor);
+            
+            setTimeout(() => {
+                cursor.remove();
+            }, 500);
+        });
+        
+        // Function to show alerts with animation
+        function showAlert(message) {
+            const alertBox = document.createElement('div');
+            alertBox.className = 'custom-alert';
+            alertBox.innerHTML = `
+                <div style="background: rgba(25, 25, 25, 0.9); padding: 20px; border-radius: 10px; 
+                            box-shadow: 0 4px 20px rgba(42, 157, 143, 0.3), 0 0 15px rgba(42, 157, 143, 0.3); 
+                            position: fixed; top: 100px; left: 50%; transform: translateX(-50%); z-index: 1000;
+                            animation: slideDown 0.3s ease-out, fadeOut 0.3s ease-out 2s forwards;
+                            display: flex; align-items: center; gap: 15px; border: 1px solid rgba(42, 157, 143, 0.4);">
+                    <i class="fas fa-info-circle" style="color: #2a9d8f; font-size: 24px;"></i>
+                    <span style="color: #f8f9fa;">${message}</span>
+                </div>
+            `;
+            document.body.appendChild(alertBox);
+            
+            setTimeout(() => {
+                alertBox.remove();
+            }, 2500);
+        }
+        
+        // Search functionality
+        function submitSearch() {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput.value.trim() !== '') {
+                // You can replace this with the actual search URL
+                window.location.href = `?search=${encodeURIComponent(searchInput.value.trim())}`;
+            }
+        }
+        
+        // Allow search submission with Enter key
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                submitSearch();
+            }
+        });
+        
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('.header');
+            if (window.scrollY > 30) {
+                header.style.padding = '12px 20px';
+                header.style.background = 'rgba(20, 20, 20, 0.9)';
+            } else {
+                header.style.padding = '20px';
+                header.style.background = 'rgba(25, 25, 25, 0.8)';
+            }
+        });
+    </script>
+    
+    <style>
+        @keyframes slideDown {
+            from { transform: translate(-50%, -30px); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        .cursor-glow {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: rgba(42, 157, 143, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            animation: cursorFade 0.5s ease-out forwards;
+        }
+        
+        @keyframes cursorFade {
+            0% { width: 5px; height: 5px; opacity: 1; }
+            100% { width: 40px; height: 40px; opacity: 0; }
+        }
+    </style>
+</body>
+</html>
